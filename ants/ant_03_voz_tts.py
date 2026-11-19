@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import os
 import shutil
 import subprocess
 import sys
@@ -14,11 +15,55 @@ from lbh.protocol import AntRole, SignalType
 
 
 class VozTTSAnt:
-    def __init__(self, bus: LBHBus, output_dir: Path, piper_model: Path | None = None):
+    """Motores en orden: piper_local -> espeak_local -> stdlib_tone_fallback."""
+
+    def __init__(self, bus: LBHBus, output_dir: Path, piper_model: Path | None = None,
+                 espeak_voice: str | None = None):
         self.bus = bus
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.piper_model = Path(piper_model) if piper_model else None
+        self.espeak_voice = espeak_voice or os.environ.get("ESPEAK_VOICE", "es-419")
+
+    # ---- utilidades ----
+    def _wav_duration(self, wav_path: Path) -> float:
+        with wave.open(str(wav_path), "rb") as wf:
+            rate = wf.getframerate()
+            return round(wf.getnframes() / float(rate), 3) if rate else 0.0
+
+    def _wav_ok(self, wav_path: Path) -> bool:
+        try:
+            return wav_path.exists() and wav_path.stat().st_size > 44 and self._wav_duration(wav_path) > 0
+        except (wave.Error, EOFError, OSError):
+            return False
+
+    # ---- motores ----
+    def _try_piper(self, text: str, wav_path: Path) -> bool:
+        piper_bin = shutil.which("piper")
+        if not (piper_bin and self.piper_model and self.piper_model.exists()):
+            return False
+        wav_path.unlink(missing_ok=True)
+        cmd = [piper_bin, "--model", str(self.piper_model), "--output_file", str(wav_path)]
+        try:
+            proc = subprocess.run(cmd, input=text.encode("utf-8"), capture_output=True, timeout=60)
+        except (subprocess.TimeoutExpired, OSError):
+            return False
+        return proc.returncode == 0 and self._wav_ok(wav_path)
+
+    def _try_espeak(self, text: str, wav_path: Path) -> bool:
+        binary = shutil.which("espeak-ng") or shutil.which("espeak")
+        if not binary:
+            return False
+        for voice in dict.fromkeys([self.espeak_voice, "es"]):
+            wav_path.unlink(missing_ok=True)
+            cmd = [binary, "-v", voice, "-s", "160", "-w", str(wav_path), "--stdin"]
+            try:
+                proc = subprocess.run(cmd, input=text.encode("utf-8"), capture_output=True, timeout=30)
+            except (subprocess.TimeoutExpired, OSError):
+                continue
+            if proc.returncode == 0 and self._wav_ok(wav_path):
+                return True
+        return False
 
     def _synthesize_fallback_wav(self, text: str, wav_path: Path) -> None:
         sample_rate = 16000
@@ -40,11 +85,7 @@ class VozTTSAnt:
             wf.setframerate(sample_rate)
             wf.writeframes(samples.tobytes())
 
-    def _wav_duration(self, wav_path: Path) -> float:
-        with wave.open(str(wav_path), "rb") as wf:
-            rate = wf.getframerate()
-            return round(wf.getnframes() / float(rate), 3) if rate else 0.0
-
+    # ---- ciclo ----
     def run(self, frame_path: Path) -> Path:
         msg = self.bus.read(frame_path)
         p = msg["payload"]
@@ -52,20 +93,14 @@ class VozTTSAnt:
         text = p["reply_text"]
         wav_path = self.output_dir / f"{session_id}_voice.wav"
 
-        engine = "stdlib_tone_fallback"
-        piper_bin = shutil.which("piper")
-        used_piper = False
-        if piper_bin and self.piper_model and self.piper_model.exists():
-            cmd = [piper_bin, "--model", str(self.piper_model), "--output_file", str(wav_path)]
-            try:
-                proc = subprocess.run(cmd, input=text.encode("utf-8"), capture_output=True, timeout=60)
-                used_piper = proc.returncode == 0 and wav_path.exists()
-            except (subprocess.TimeoutExpired, OSError):
-                used_piper = False
-        if used_piper:
+        if self._try_piper(text, wav_path):
             engine = "piper_local"
+        elif self._try_espeak(text, wav_path):
+            engine = "espeak_local"
         else:
+            wav_path.unlink(missing_ok=True)
             self._synthesize_fallback_wav(text, wav_path)
+            engine = "stdlib_tone_fallback"
 
         duration = self._wav_duration(wav_path)
         wav_sha256 = hashlib.sha256(wav_path.read_bytes()).hexdigest()
