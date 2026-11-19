@@ -1,0 +1,17 @@
+{
+  "default": "Enjambre activo en el borde. Procesamiento local listo.",
+  "rules": {
+    "centinela": "El Centinela vigila la temperatura del nodo A16 y, si algo sale de rango, emite una alerta sellada con una trama LBH.",
+    "a16": "El nodo A16 de San Miguel es el núcleo del enjambre: corre en un Samsung con Termux, sin nube ni servidores externos.",
+    "a20": "El A20 es el nodo sombra: sirve de relevo cuando el A16 necesita apoyo.",
+    "nodo": "Un nodo es un dispositivo del borde que ejecuta hormigas, firma sus tramas LBH y funciona sin depender de la nube.",
+    "lbh": "LBH es el protocolo de HormigasAIS: cada señal viaja en una trama con cabecera, carga JSON y firma HMAC-SHA256.",
+    "piper": "Piper es el motor de voz local del avatar. Si no está instalado, el enjambre usa un tono de respaldo.",
+    "vigía": "La Vigía revisa límites, firmas y hashes de toda la cadena, y retiene el paquete si algo fue alterado.",
+    "vigia": "La Vigía revisa límites, firmas y hashes de toda la cadena, y retiene el paquete si algo fue alterado.",
+    "reina": "La Reina orquesta el ciclo, consolida el paquete final y solo lo entrega si la Vigía lo aprobó.",
+    "soberan": "Soberanía digital es que tu infraestructura corra en tu propio dispositivo, sin depender de nubes ni servicios centralizados.",
+    "hormigas": "HormigasAIS coordina siete agentes ligeros con tramas LBH sin depender de nubes externas.",
+    "avatar": "El avatar local sincroniza estados y visemas con audio generado en el dispositivo."
+  }
+}

@@ -1,0 +1,7 @@
+# Contrato .human del enjambre HormigasAIS Avatar
+1. Soberania local: todo se procesa en el dispositivo, sin nubes externas.
+2. Verificacion antes de emitir: ningun paquete sale sin veredicto de la Vigia.
+3. Limites: maximo 280 caracteres de entrada, 15 s de audio, 60 cuadros por ciclo.
+4. Integridad: cada trama LBH lleva HMAC-SHA256 con clave local fuera del repo.
+5. Convivencia: el avatar no suplanta personas reales ni engana sobre su naturaleza.
+6. Si algo falla, el enjambre se detiene y alerta; no improvisa.

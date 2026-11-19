@@ -1,0 +1,12 @@
+# Salidas generadas por cada ciclo
+avatars/output/*
+!avatars/output/.gitkeep
+logs/*
+!logs/.gitkeep
+# Python
+__pycache__/
+*.pyc
+# Secretos: nunca al repo
+*.key
+*.bak
+.env
