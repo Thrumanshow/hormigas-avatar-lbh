@@ -12,6 +12,65 @@
     "reina": "La Reina orquesta el ciclo, consolida el paquete final y solo lo entrega si la Vigía lo aprobó.",
     "soberan": "Soberanía digital es que tu infraestructura corra en tu propio dispositivo, sin depender de nubes ni servicios centralizados.",
     "hormigas": "HormigasAIS coordina siete agentes ligeros con tramas LBH sin depender de nubes externas.",
-    "avatar": "El avatar local sincroniza estados y visemas con audio generado en el dispositivo."
+    "avatar": "El avatar local sincroniza estados y visemas con audio generado en el dispositivo.",
+    "lbh-sdk": "LBH-SDK es el SDK oficial y abierto del protocolo LBH. Hay versión en Python, sin dependencias externas, y en JavaScript.",
+    "lbh-significado": "LBH significa Lenguaje Binario HormigasAIS: un protocolo binario abierto para comunicación en el borde, automatización e IA.",
+    "feromona": "En LBH, la feromona es la trama FUEL: la señal que una hormiga deja para que las demás la entiendan.",
+    "tipos": "LBH define cinco tramas base: SYNC para sincronizar, PING para salud, FUEL como feromona, ACKK para confirmar y ERRR para errores.",
+    "especificacion": "La especificación LBH_SPEC v2.0 es pública, tiene DOI en Zenodo y es la base del SDK oficial.",
+    "hormigasais": "HormigasAIS es un ecosistema de computación de borde soberana e IA distribuida que no depende de la nube.",
+    "enjambre": "El enjambre son siete hormigas ligeras que se pasan tramas LBH: exploran, razonan, hablan, dibujan, vigilan y orquestan.",
+    "exploradora": "La Exploradora recibe la entrada, la limpia, valida el contexto y la convierte en una trama de intención.",
+    "razonadora": "La Razonadora consulta la base de conocimiento, arma una respuesta breve y comparte su conocimiento como feromona.",
+    "voz": "La hormiga de Voz convierte la respuesta en audio local con Piper, espeak o un tono de respaldo.",
+    "fonemas": "La hormiga de Fonemas convierte el texto en visemas: las formas de boca que se sincronizan con el audio.",
+    "render": "La hormiga Render dibuja los cuadros SVG del avatar, uno por cada visema muestreado.",
+    "trama": "Una trama LBH lleva cabecera, carga JSON y firma HMAC-SHA256; las hormigas la pasan por el bus local.",
+    "contrato": "El contrato .human fija los límites del enjambre: 280 caracteres, 15 segundos y 60 cuadros. Si falta, el ciclo no arranca."
+  },
+  "aliases": {
+    "lbh-sdk": [
+      "sdk",
+      "lbhsdk"
+    ],
+    "lbh-significado": [
+      "lenguaje binario",
+      "que significa lbh",
+      "significado de lbh",
+      "siglas de lbh"
+    ],
+    "feromona": [
+      "feromonas",
+      "fuel"
+    ],
+    "tipos": [
+      "tipos de trama",
+      "sync",
+      "ping",
+      "ackk",
+      "errr"
+    ],
+    "especificacion": [
+      "spec",
+      "zenodo",
+      "doi"
+    ],
+    "fonemas": [
+      "fonema",
+      "visemas",
+      "visema"
+    ],
+    "render": [
+      "cuadros",
+      "cuadro",
+      "svg"
+    ],
+    "trama": [
+      "tramas",
+      "bus"
+    ],
+    "contrato": [
+      "human"
+    ]
   }
 }

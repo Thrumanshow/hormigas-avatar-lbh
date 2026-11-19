@@ -40,6 +40,15 @@ class VigiaContratoAnt:
         except Exception:
             return False
 
+    def _kb_in_sync(self, chain: list[Path]) -> bool:
+        """La Exploradora y la Razonadora deben haber usado la misma KB (mismo hash)."""
+        try:
+            a = self.bus.read(chain[0])["payload"].get("kb_sha256")
+            b = self.bus.read(chain[1])["payload"].get("kb_sha256")
+            return bool(a) and a == b
+        except Exception:
+            return False
+
     def run(self, chain: list[Path]) -> Path:
         """chain = [intent, reply, audio, viseme, avatar] en ese orden."""
         try:
@@ -54,6 +63,7 @@ class VigiaContratoAnt:
         checks = {
             "human_contract_present": human_ok,
             "chain_integrity": self._check_chain(chain, session_id),
+            "knowledge_in_sync": self._kb_in_sync(chain),
             "duration_within_limit": float(p.get("duration_sec", 0.0)) <= self.max_duration_sec,
             "frame_count_within_limit": int(p.get("frame_count", 0)) <= self.max_frames,
             "audio_hash_intact": False,

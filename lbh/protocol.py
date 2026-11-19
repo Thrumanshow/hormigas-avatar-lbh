@@ -29,6 +29,7 @@ class SignalType(IntEnum):
     AVATAR_FRAME = 50
     CONTRACT_VERDICT = 60
     SWARM_PACKAGE = 70
+    KNOWLEDGE_PHEROMONE = 80
     ALERT = 99
 
 
