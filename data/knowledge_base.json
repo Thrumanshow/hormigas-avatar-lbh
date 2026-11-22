@@ -16,8 +16,8 @@
     "lbh-sdk": "LBH-SDK es el SDK oficial y abierto del protocolo LBH. Hay versión en Python, sin dependencias externas, y en JavaScript.",
     "lbh-significado": "LBH significa Lenguaje Binario HormigasAIS: un protocolo binario abierto para comunicación en el borde, automatización e IA.",
     "feromona": "En LBH, la feromona es la trama FUEL: la señal que una hormiga deja para que las demás la entiendan.",
-    "tipos": "LBH define cinco tramas base: SYNC para sincronizar, PING para salud, FUEL como feromona, ACKK para confirmar y ERRR para errores.",
-    "especificacion": "La especificación LBH_SPEC v2.0 es pública, tiene DOI en Zenodo y es la base del SDK oficial.",
+    "tipos": "LBH define siete tramas: SEAL sella, VERI verifica, SYNC sincroniza, PING mide salud, FUEL es la feromona, ACKK confirma y ERRR avisa errores.",
+    "especificacion": "El protocolo tiene dos registros en Zenodo: uno para la versión 1 y otro para LBH v2.0, la versión vigente.",
     "hormigasais": "HormigasAIS es un ecosistema de computación de borde soberana e IA distribuida que no depende de la nube.",
     "enjambre": "El enjambre son siete hormigas ligeras que se pasan tramas LBH: exploran, razonan, hablan, dibujan, vigilan y orquestan.",
     "exploradora": "La Exploradora recibe la entrada, la limpia, valida el contexto y la convierte en una trama de intención.",
@@ -26,7 +26,8 @@
     "fonemas": "La hormiga de Fonemas convierte el texto en visemas: las formas de boca que se sincronizan con el audio.",
     "render": "La hormiga Render dibuja los cuadros SVG del avatar, uno por cada visema muestreado.",
     "trama": "Una trama LBH lleva cabecera, carga JSON y firma HMAC-SHA256; las hormigas la pasan por el bus local.",
-    "contrato": "El contrato .human fija los límites del enjambre: 280 caracteres, 15 segundos y 60 cuadros. Si falta, el ciclo no arranca."
+    "contrato": "El contrato .human fija los límites del enjambre: 280 caracteres, 15 segundos y 60 cuadros. Si falta, el ciclo no arranca.",
+    "mesentery": "MESENTERY v1.0 es la arquitectura de LBH v2.0: define cómo los nodos emiten, verifican y propagan feromonas digitales."
   },
   "aliases": {
     "lbh-sdk": [
@@ -48,7 +49,9 @@
       "sync",
       "ping",
       "ackk",
-      "errr"
+      "errr",
+      "seal",
+      "veri"
     ],
     "especificacion": [
       "spec",
@@ -71,11 +74,21 @@
     ],
     "contrato": [
       "human"
+    ],
+    "mesentery": [
+      "m2m",
+      "lbh-m2m"
     ]
   },
   "pronunciacion": {
     "HormigasAIS": "hormigas ais",
-    "LBH-SDK": "LBH SDK"
+    "LBH-SDK": "LBH SDK",
+    "ERRR": "error",
+    "ACKK": "ak",
+    "SEAL": "sil",
+    "SYNC": "sinc",
+    "PING": "pin",
+    "FUEL": "fuel"
   },
   "velocidad": {
     "lbh-sdk": 125,

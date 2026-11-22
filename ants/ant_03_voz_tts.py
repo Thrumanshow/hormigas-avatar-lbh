@@ -49,7 +49,7 @@ class VozTTSAnt:
         keys = [k for k, v in pron.items() if isinstance(k, str) and k and isinstance(v, str)]
         for k in sorted(keys, key=len, reverse=True):
             repl = pron[k]
-            text = re.sub(re.escape(k), lambda m, r=repl: r, text, flags=re.IGNORECASE)
+            text = re.sub(r"(?<!\w)" + re.escape(k) + r"(?!\w)", lambda m, r=repl: r, text, flags=re.IGNORECASE)
         return text
 
     def rate_for(self, rule) -> int:
