@@ -72,5 +72,13 @@
     "contrato": [
       "human"
     ]
+  },
+  "pronunciacion": {
+    "HormigasAIS": "hormigas ais",
+    "LBH-SDK": "LBH SDK"
+  },
+  "velocidad": {
+    "lbh-sdk": 125,
+    "hormigasais": 140
   }
 }
