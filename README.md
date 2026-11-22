@@ -74,6 +74,12 @@ La clave HMAC vive en `~/.hormigas-avatar/lbh.key`, fuera del repo (cambia la ru
 
 LBH (Lenguaje Binario HormigasAIS) es un protocolo binario abierto con especificación pública y SDKs oficiales. SDK de Python: https://pypi.org/project/lbh-sdk/
 
+## Tests
+
+    python -m unittest discover -s tests -t . -v
+
+Solo usan `unittest` (biblioteca estándar). Trabajan en carpetas temporales y con una clave HMAC propia: no tocan tu clave real ni las salidas del repo. `tests/test_kb_real.py` valida `data/knowledge_base.json` (longitud de las reglas, alias, pronunciación, velocidad y choques entre reglas).
+
 ## Licencia
 
 Mozilla Public License 2.0 (MPL-2.0). Ver `LICENSE`.
