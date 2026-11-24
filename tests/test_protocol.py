@@ -50,6 +50,35 @@ class ProtocolTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             decode_lbh_frame(b"XXXX" + self.frame[4:])
 
+    def test_version_1_es_la_unica_admitida(self):
+        self.assertEqual(decode_lbh_frame(self.frame)["version"], 1)
+
+    def test_versiones_no_admitidas_se_rechazan(self):
+        import hashlib
+        import hmac
+        import struct
+        from lbh.protocol import HEADER_STRUCT, MAC_SIZE, get_key
+
+        header = bytearray(self.frame[:HEADER_STRUCT.size])
+        body_length = struct.unpack("!I", header[-4:])[0]
+        body_end = HEADER_STRUCT.size + body_length
+        body = self.frame[HEADER_STRUCT.size:body_end]
+
+        for version in (0, 2, 255):
+            with self.subTest(version=version):
+                candidate = bytearray(header)
+                candidate[4] = version
+                signed = bytes(candidate) + body
+                mac = hmac.new(
+                    get_key(), signed, hashlib.sha256
+                ).digest()
+                frame = signed + mac
+
+                self.assertEqual(len(mac), MAC_SIZE)
+                with self.assertRaisesRegex(
+                    ValueError, "Version LBH no soportada"
+                ):
+                    decode_lbh_frame(frame)
     def test_tipo_feromona_existe(self):
         self.assertEqual(int(SignalType.KNOWLEDGE_PHEROMONE), 80)
 

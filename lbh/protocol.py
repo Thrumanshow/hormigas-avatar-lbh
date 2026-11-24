@@ -90,6 +90,8 @@ def decode_lbh_frame(raw: bytes) -> dict:
     magic, version, role, sig_type, flags, ts, length = HEADER_STRUCT.unpack(header)
     if magic != MAGIC:
         raise ValueError("Cabecera LBH invalida")
+    if version != 1:
+        raise ValueError("Version LBH no soportada")
     if length > MAX_PAYLOAD:
         raise ValueError("Longitud de carga util LBH excesiva")
 
