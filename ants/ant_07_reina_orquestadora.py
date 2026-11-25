@@ -17,6 +17,41 @@ class ReinaOrquestadoraAnt:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
+    def _verify_verdict(self, session_id: str, avatar_path: Path, verdict_path: Path):
+        """Comprueba que el veredicto es de la Vigia, de esta sesion y de ESTA trama de avatar.
+
+        Devuelve (veredicto, avatar, fallo). fallo es None solo si todo verifica; en cualquier
+        otro caso la Reina no debe entregar el paquete (falla cerrada).
+        """
+        try:
+            verdict = self.bus.read(verdict_path)
+            avatar = self.bus.read(avatar_path)
+        except Exception:
+            return None, None, "verdict_readable"
+
+        if verdict["role"] != AntRole.VIGIA_CONTRATO:
+            return verdict, avatar, "verdict_role"
+        if verdict["sig_type"] not in (SignalType.CONTRACT_VERDICT, SignalType.ALERT):
+            return verdict, avatar, "verdict_type"
+
+        vp = verdict["payload"]
+        if not isinstance(vp, dict) or vp.get("session_id") != session_id:
+            return verdict, avatar, "verdict_session"
+
+        approved = vp.get("approved")
+        if not isinstance(approved, bool) or approved != (verdict["sig_type"] == SignalType.CONTRACT_VERDICT):
+            return verdict, avatar, "verdict_consistency"
+
+        if avatar["role"] != AntRole.RENDER_AVATAR or avatar["sig_type"] != SignalType.AVATAR_FRAME:
+            return verdict, avatar, "avatar_frame_type"
+        if not isinstance(avatar["payload"], dict) or avatar["payload"].get("session_id") != session_id:
+            return verdict, avatar, "avatar_session"
+
+        if vp.get("verified_avatar_frame_signal") != avatar["mac_hex"]:
+            return verdict, avatar, "verdict_avatar_binding"
+
+        return verdict, avatar, None
+
     def consolidate(
         self,
         session_id: str,
@@ -28,17 +63,25 @@ class ReinaOrquestadoraAnt:
         avatar_path: Path,
         verdict_path: Path,
     ) -> dict:
-        verdict_msg = self.bus.read(verdict_path)
-        approved = bool(verdict_msg["payload"].get("approved", False))
-        avatar_payload = self.bus.read(avatar_path)["payload"]
+        verdict_msg, avatar_msg, fallo = self._verify_verdict(session_id, avatar_path, verdict_path)
 
-        status = "READY_FOR_DELIVERY" if approved else "HELD_BY_VIGIA"
+        if fallo is not None:
+            approved = False
+            status = "HELD_UNVERIFIED_VERDICT"
+            checks = {fallo: False}
+            avatar_payload = {}
+        else:
+            approved = verdict_msg["payload"]["approved"]
+            status = "READY_FOR_DELIVERY" if approved else "HELD_BY_VIGIA"
+            checks = verdict_msg["payload"].get("checks", {})
+            avatar_payload = avatar_msg["payload"]
+
         package = {
             "session_id": session_id,
             "priority": priority,
             "status": status,
             "approved": approved,
-            "checks": verdict_msg["payload"].get("checks", {}),
+            "checks": checks,
             "wav_path": avatar_payload.get("wav_path"),
             "duration_sec": avatar_payload.get("duration_sec"),
             "frame_count": avatar_payload.get("frame_count"),
